@@ -37,18 +37,18 @@ jobs:
           pip install -r requirements.txt
       
       - name: Extract transcript (Video Mode)
-        if: github.event.inputs.mode == 'video' || github.event.client_payload.mode == 'video'
+        if: (github.event.inputs.mode == 'video') || (github.event.client_payload.mode == 'video')
         run: |
           URL="${{ github.event.inputs.url || github.event.client_payload.url }}"
           echo "📹 Extracting single video: $URL"
-          python scripts/extract_video.py "$URL"
+          python3 scripts/extract_video.py "$URL"
       
       - name: Extract transcript (Channel Mode)
-        if: github.event.inputs.mode == 'channel' || github.event.client_payload.mode == 'channel'
+        if: (github.event.inputs.mode == 'channel') || (github.event.client_payload.mode == 'channel')
         run: |
           URL="${{ github.event.inputs.url || github.event.client_payload.url }}"
           echo "📺 Extracting full channel: $URL"
-          python scripts/extract_channel.py "$URL"
+          python3 scripts/extract_channel.py "$URL"
       
       - name: Upload transcript artifact
         uses: actions/upload-artifact@v4
