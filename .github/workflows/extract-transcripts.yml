@@ -55,20 +55,5 @@ jobs:
         with:
           name: transcript-output
           path: '*.txt'
-          retention-days: 7
-      
-      - name: Create Release (if main branch)
-        if: github.ref == 'refs/heads/main'
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: transcript-${{ github.run_number }}
-          name: Transcript Extract ${{ github.run_number }}
-          body: |
-            YouTube Transcript Extraction
-            
-            **Mode**: ${{ github.event.inputs.mode || github.event.client_payload.mode }}
-            **URL**: ${{ github.event.inputs.url || github.event.client_payload.url }}
-            **Date**: ${{ github.event.repository.updated_at }}
-          files: '*.txt'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          retention-days: 30
+          if-no-files-found: error
