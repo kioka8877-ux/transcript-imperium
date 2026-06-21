@@ -1,59 +1,55 @@
 #!/usr/bin/env python3
 """
-Extract transcripts from all videos in a YouTube channel
+Extract transcripts from all videos in a YouTube channel using yt-dlp
 """
 
 import sys
 import time
+import json
+import subprocess
 from datetime import datetime
 from youtube_transcript_api import YouTubeTranscriptApi
-from urllib.parse import urlparse, parse_qs
-import re
-
-# Try to import scrapetube (for getting channel videos)
-try:
-    import scrapetube
-    HAS_SCRAPETUBE = True
-except ImportError:
-    HAS_SCRAPETUBE = False
-    print("⚠️ scrapetube not available, using alternative method")
-
-def get_channel_id(url):
-    """Extract channel ID or handle from YouTube URL"""
-    parsed = urlparse(url)
-    path = parsed.path
-    
-    # Handle different channel URL formats
-    if '/@' in path:
-        return path.split('/@')[1].split('/')[0], 'handle'
-    elif '/channel/' in path:
-        return path.split('/channel/')[1].split('/')[0], 'id'
-    elif '/c/' in path:
-        return path.split('/c/')[1].split('/')[0], 'custom'
-    elif '/user/' in path:
-        return path.split('/user/')[1].split('/')[0], 'user'
-    
-    raise ValueError(f"Could not extract channel identifier from URL: {url}")
 
 def get_channel_videos(channel_url):
-    """Get all video IDs from a channel"""
+    """Get all video IDs from a channel using yt-dlp"""
     try:
-        channel_id, id_type = get_channel_id(channel_url)
-        print(f"📺 Channel identifier: {channel_id} (type: {id_type})")
+        print(f"📺 Fetching videos from: {channel_url}")
         
-        if HAS_SCRAPETUBE:
-            if id_type == 'handle':
-                videos = scrapetube.get_channel(channel_username=channel_id)
-            else:
-                videos = scrapetube.get_channel(channel_id=channel_id)
-            
-            video_ids = [video['videoId'] for video in videos]
-            return video_ids
-        else:
-            print("❌ scrapetube is required for channel extraction")
-            print("Install with: pip install scrapetube")
-            sys.exit(1)
-            
+        # Use yt-dlp to get video list
+        result = subprocess.run(
+            [
+                'yt-dlp',
+                '--flat-playlist',
+                '--dump-json',
+                '--no-warnings',
+                channel_url
+            ],
+            capture_output=True,
+            text=True,
+            timeout=120
+        )
+        
+        if result.returncode != 0:
+            raise RuntimeError(f"yt-dlp error: {result.stderr}")
+        
+        # Parse JSON output
+        video_ids = []
+        for line in result.stdout.strip().split('\n'):
+            if not line:
+                continue
+            try:
+                data = json.loads(line)
+                video_id = data.get('id')
+                if video_id:
+                    video_ids.append(video_id)
+            except json.JSONDecodeError:
+                continue
+        
+        return video_ids
+        
+    except subprocess.TimeoutExpired:
+        print("❌ Timeout while fetching channel videos")
+        sys.exit(1)
     except Exception as e:
         print(f"❌ Error getting channel videos: {str(e)}")
         sys.exit(1)
@@ -76,6 +72,10 @@ def extract_channel(channel_url):
         total_videos = len(video_ids)
         
         print(f"📊 Found {total_videos} videos")
+        
+        if total_videos == 0:
+            print("⚠️ No videos found in this channel")
+            sys.exit(1)
         
         # Prepare output file
         extraction_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -154,6 +154,8 @@ def extract_channel(channel_url):
         
     except Exception as e:
         print(f"❌ Error: {str(e)}")
+        import traceback
+        traceback.print_exc()
         sys.exit(1)
 
 if __name__ == "__main__":
