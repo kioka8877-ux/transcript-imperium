@@ -51,18 +51,30 @@ def extract_single_video(video_url):
         duration = transcript_list[-1]['start'] + transcript_list[-1]['duration'] if transcript_list else 0
         
         # Format output
+        extraction_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        current_date = datetime.now().strftime('%Y-%m-%d')
+        
         output = "=" * 80 + "\n"
         output += f"VIDÉO: Single Video Extract\n"
-        output += f"DATE D'EXTRACTION: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+        output += f"DATE D'EXTRACTION: {extraction_date}\n"
         output += "=" * 80 + "\n\n"
         
         output += "┌" + "─" * 74 + "┐\n"
         output += f"│ VIDÉO #1{' ' * 66}│\n"
         output += "├" + "─" * 74 + "┤\n"
-        output += f"│ TITRE: Video from {video_id}{' ' * (74 - len(f'TITRE: Video from {video_id}'))}│\n"
-        output += f"│ URL: {video_url}{' ' * (74 - len(f'URL: {video_url}'))}│\n"
-        output += f"│ DURÉE: {format_duration(duration)}{' ' * (74 - len(f'DURÉE: {format_duration(duration)}'))}│\n"
-        output += f"│ DATE: {datetime.now().strftime('%Y-%m-%d')}{' ' * (74 - len(f'DATE: {datetime.now().strftime(\"%Y-%m-%d\")}'))}│\n"
+        
+        title_line = f"TITRE: Video from {video_id}"
+        output += f"│ {title_line}{' ' * (72 - len(title_line))}│\n"
+        
+        url_line = f"URL: {video_url}"
+        output += f"│ {url_line}{' ' * (72 - len(url_line))}│\n"
+        
+        duration_line = f"DURÉE: {format_duration(duration)}"
+        output += f"│ {duration_line}{' ' * (72 - len(duration_line))}│\n"
+        
+        date_line = f"DATE: {current_date}"
+        output += f"│ {date_line}{' ' * (72 - len(date_line))}│\n"
+        
         output += "└" + "─" * 74 + "┘\n\n"
         
         output += full_text + "\n\n"

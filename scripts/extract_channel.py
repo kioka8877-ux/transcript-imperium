@@ -78,9 +78,11 @@ def extract_channel(channel_url):
         print(f"📊 Found {total_videos} videos")
         
         # Prepare output file
+        extraction_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        
         output = "=" * 80 + "\n"
         output += f"CHAÎNE: {channel_url}\n"
-        output += f"DATE D'EXTRACTION: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+        output += f"DATE D'EXTRACTION: {extraction_date}\n"
         output += f"NOMBRE DE VIDÉOS: {total_videos}\n"
         output += "=" * 80 + "\n\n"
         
@@ -98,14 +100,29 @@ def extract_channel(channel_url):
                 # Calculate duration
                 duration = transcript_list[-1]['start'] + transcript_list[-1]['duration'] if transcript_list else 0
                 
+                # Format current date once
+                current_date = datetime.now().strftime('%Y-%m-%d')
+                video_url = f"https://www.youtube.com/watch?v={video_id}"
+                
                 # Add to output
                 output += "┌" + "─" * 74 + "┐\n"
-                output += f"│ VIDÉO #{idx}{' ' * (74 - len(f'VIDÉO #{idx}'))}│\n"
+                
+                video_header = f"VIDÉO #{idx}"
+                output += f"│ {video_header}{' ' * (72 - len(video_header))}│\n"
                 output += "├" + "─" * 74 + "┤\n"
-                output += f"│ TITRE: Video {video_id}{' ' * (74 - len(f'TITRE: Video {video_id}'))}│\n"
-                output += f"│ URL: https://www.youtube.com/watch?v={video_id}{' ' * (74 - len(f'URL: https://www.youtube.com/watch?v={video_id}'))}│\n"
-                output += f"│ DURÉE: {format_duration(duration)}{' ' * (74 - len(f'DURÉE: {format_duration(duration)}'))}│\n"
-                output += f"│ DATE: {datetime.now().strftime('%Y-%m-%d')}{' ' * (74 - len(f'DATE: {datetime.now().strftime(\"%Y-%m-%d\")}'))}│\n"
+                
+                title_line = f"TITRE: Video {video_id}"
+                output += f"│ {title_line}{' ' * (72 - len(title_line))}│\n"
+                
+                url_line = f"URL: {video_url}"
+                output += f"│ {url_line}{' ' * (72 - len(url_line))}│\n"
+                
+                duration_line = f"DURÉE: {format_duration(duration)}"
+                output += f"│ {duration_line}{' ' * (72 - len(duration_line))}│\n"
+                
+                date_line = f"DATE: {current_date}"
+                output += f"│ {date_line}{' ' * (72 - len(date_line))}│\n"
+                
                 output += "└" + "─" * 74 + "┘\n\n"
                 
                 output += full_text + "\n\n"
