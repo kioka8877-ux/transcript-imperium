@@ -1,0 +1,74 @@
+name: Extract YouTube Transcripts
+
+on:
+  repository_dispatch:
+    types: [extract_transcript]
+  workflow_dispatch:
+    inputs:
+      url:
+        description: 'YouTube URL (video or channel)'
+        required: true
+        type: string
+      mode:
+        description: 'Extraction mode'
+        required: true
+        type: choice
+        options:
+          - video
+          - channel
+        default: video
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Extract transcript (Video Mode)
+        if: github.event.inputs.mode == 'video' || github.event.client_payload.mode == 'video'
+        run: |
+          URL="${{ github.event.inputs.url || github.event.client_payload.url }}"
+          echo "📹 Extracting single video: $URL"
+          python scripts/extract_video.py "$URL"
+      
+      - name: Extract transcript (Channel Mode)
+        if: github.event.inputs.mode == 'channel' || github.event.client_payload.mode == 'channel'
+        run: |
+          URL="${{ github.event.inputs.url || github.event.client_payload.url }}"
+          echo "📺 Extracting full channel: $URL"
+          python scripts/extract_channel.py "$URL"
+      
+      - name: Upload transcript artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: transcript-output
+          path: '*.txt'
+          retention-days: 7
+      
+      - name: Create Release (if main branch)
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: transcript-${{ github.run_number }}
+          name: Transcript Extract ${{ github.run_number }}
+          body: |
+            YouTube Transcript Extraction
+            
+            **Mode**: ${{ github.event.inputs.mode || github.event.client_payload.mode }}
+            **URL**: ${{ github.event.inputs.url || github.event.client_payload.url }}
+            **Date**: ${{ github.event.repository.updated_at }}
+          files: '*.txt'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

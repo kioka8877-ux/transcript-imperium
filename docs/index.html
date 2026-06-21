@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚔️ TRANSCRIPT IMPERIUM ⚔️</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="skull-left">💀</div>
+            <h1 class="title">⚔️ TRANSCRIPT IMPERIUM ⚔️</h1>
+            <div class="skull-right">💀</div>
+        </header>
+        
+        <div class="subtitle">FOR THE EMPEROR - EXTRACT KNOWLEDGE FROM THE VIDS</div>
+        
+        <div class="main-card">
+            <div class="mode-selector">
+                <label class="mode-option">
+                    <input type="radio" name="mode" value="video" checked>
+                    <span class="mode-label">📹 Single Video</span>
+                </label>
+                <label class="mode-option">
+                    <input type="radio" name="mode" value="channel">
+                    <span class="mode-label">📺 Full Channel</span>
+                </label>
+            </div>
+            
+            <div class="input-group">
+                <input 
+                    type="text" 
+                    id="youtubeUrl" 
+                    class="url-input" 
+                    placeholder="Paste YouTube URL here..."
+                    autocomplete="off"
+                >
+            </div>
+            
+            <button id="extractBtn" class="extract-btn">
+                <span class="btn-icon">⚙️</span>
+                INITIATE EXTRACTION
+                <span class="btn-icon">⚙️</span>
+            </button>
+            
+            <div id="progressContainer" class="progress-container hidden">
+                <div class="progress-label">
+                    <span id="progressText">Preparing extraction...</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill"></div>
+                </div>
+                <div id="statusText" class="status-text">💀 PURGING DATA HERESY 💀</div>
+            </div>
+            
+            <div id="resultContainer" class="result-container hidden">
+                <div class="result-success">
+                    ✅ EXTRACTION COMPLETE - FOR THE EMPEROR!
+                </div>
+                <a id="downloadLink" class="download-btn" download>
+                    📥 DOWNLOAD TRANSCRIPT
+                </a>
+            </div>
+            
+            <div id="errorContainer" class="error-container hidden">
+                <div class="error-text">
+                    ❌ <span id="errorMessage">Error occurred</span>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="footer">
+            <div class="footer-text">
+                By the will of the Machine God, knowledge shall be extracted!
+            </div>
+            <div class="footer-link">
+                <a href="https://github.com/kioka8877-ux/transcript-imperium" target="_blank">
+                    📖 View on GitHub
+                </a>
+            </div>
+        </footer>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
